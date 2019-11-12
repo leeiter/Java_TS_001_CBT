@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.biz.cbt.dao.QuizDao">
+
+	<resultMap type="QuizVO" id="QuizDetail">
+		<id column="cb_seq" property="cb_seq" />
+		<result column="cb_subject" property="cb_subject" />
+		<collection property="cdList" column="cb_seq" ofType="CbtDetailDTO" select="cbtDetail" />
+	</resultMap>
+	
+	<select id="selectAll" resultMap="QuizDetail">
+		SELECT * FROM tbl_cbt_quiz
+	</select>
+	
+	<select id="cbtDetail" resultType="CbtDetailDTO">
+		SELECT
+			D_SEQ,
+			D_CD_SEQ,
+			D_ANSWER,
+			D_OK
+		FROM tbl_cbt_detail
+		WHERE D_CD_SEQ = #{cb_seq}
+	</select>
+	
+	<select id="findById" resultMap="QuizDetail">
+	 	SELECT
+			CB_SEQ,
+			CB_QUIZ
+		FROM tbl_cbt_quiz
+		WHERE CB_SEQ = #{cb_seq}
+	</select>
+	
+	<insert id="insertQuiz" parameterType="CbtQuizDTO">
+		<selectKey keyProperty="cb_seq" order="BEFORE" resultType="Long">
+			SELECT SEQ_CBTQUIZ.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO tbl_cbt_quiz(
+			CB_SEQ,
+			CB_QUIZ
+		) VALUES (
+			#{cb_seq, jdbcType = VARCHAR},
+			#{cb_quiz, jdbcType = VARCHAR}
+		)
+	</insert>
+	
+	<insert id="insertDetail" parameterType="CbtDetailDTO">
+		<selectKey keyProperty="d_seq" order="BEFORE" resultType="Long">
+			SELECT SEQ_CBTDETAIL.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO tbl_cbt_detail(
+			D_SEQ,
+			D_CD_SEQ,
+			D_ANSWER,
+			D_OK
+		) VALUES (
+			#{d_seq, jdbcType = VARCHAR},
+			#{d_cd_seq, jdbcType = VARCHAR},
+			#{d_answer, jdbcType = VARCHAR},
+			#{d_ok, jdbcType = VARCHAR}
+		)
+	</insert>
+	
+	<update id="updateQuiz" parameterType="CbtQuizDTO">
+		UPDATE tbl__cbt_quiz SET
+			CB_SEQ = #{cb_seq, jdbcType = VARCHAR},
+			CB_QUIZ = #{cb_quiz, jdbcType = VARCHAR}
+ 		WHERE CB_SEQ = #{cb_seq}
+	</update>
+	
+	<update id="updateDetail" parameterType="CbtDetailDTO">
+		UPDATE tbl_cbt_detail SET
+			D_SEQ = #{d_seq, jdbcType = VARCHAR},
+			D_CD_SEQ = #{d_cd_seq, jdbcType = VARCHAR},
+			D_ANSWER = #{d_answer, jdbcType = VARCHAR},
+			D_OK = #{d_ok, jdbcType = VARCHAR}
+		WHERE D_CD_SEQ = #{cb_seq}
+	</update>
+	
+ 	<delete id="deleteQuiz" parameterType="CbtQuizDTO">
+ 		DELETE FROM tbl__cbt_quiz
+ 		WHERE CB_SEQ = #{cb_seq}
+ 	</delete>
+ 	
+ 	 <delete id="deleteDetail" parameterType="CbtDetailDTO">
+ 		DELETE FROM tbl_cbt_detail
+ 		WHERE D_CD_SEQ = #{cb_seq}
+ 	</delete>
+	
+</mapper>
